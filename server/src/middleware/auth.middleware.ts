@@ -1,12 +1,8 @@
-import type { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Response } from 'express';
 import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { ENV } from '../lib/env.ts';
 import User from '../models/User.ts';
-import type { IUser } from '../types/user.type.ts';
-
-interface AuthRequest extends Request {
-    user?: IUser;
-}
+import type { AuthRequest } from '../types/global.inerface.ts';
 
 export const authMiddleware = async (
     req: AuthRequest,

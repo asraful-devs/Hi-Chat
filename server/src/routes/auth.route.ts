@@ -16,7 +16,7 @@ router.post('/login', login);
 
 router.post('/logout', logout);
 
-router.patch('/update-profile', authMiddleware, updateProfile as any);
+router.patch('/update-profile', authMiddleware, updateProfile);
 
 router.get('/check-auth', authMiddleware, (req: AuthRequest, res: Response) => {
     res.status(200).json({ user: req.user, message: 'Authenticated' });
