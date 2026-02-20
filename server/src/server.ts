@@ -16,7 +16,7 @@ const PORT = process.env.PORT || 5000;
 app.use('/api/auth', authRoutes);
 
 app.use('/server', (req: Request, res: Response) => {
-    res.send('Hello from the Hi Chat server!');
+    res.send('Hello from the Hi Chat server!!!');
 });
 
 // __dirname is not available in ES modules, so we need to use path.resolve() to get the current directory
