@@ -1,9 +1,11 @@
 import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
 import { sendWelcomeEmail } from '../emails/emailHandlers.ts';
+import cloudinary from '../lib/cloudinary.ts';
 import { ENV } from '../lib/env.ts';
 import { generateToken } from '../lib/utils.ts';
 import User from '../models/User.ts';
+import type { AuthRequest } from '../types/global.inerface.ts';
 
 export const singup = async (req: Request, res: Response) => {
     const { fullName, email, password } = req.body;
@@ -71,5 +73,81 @@ export const singup = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error during signup:', error);
         res.status(500).json({ message: 'Server error during signup' });
+    }
+};
+
+export const login = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const normalizedEmail =
+        typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const pass = typeof password === 'string' ? password.trim() : '';
+
+    if (!normalizedEmail || !pass) {
+        return res
+            .status(400)
+            .json({ message: 'Email and password are required' });
+    }
+
+    try {
+        const user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(pass, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        generateToken(user._id, res);
+
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePic: user.profilePic,
+        });
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ message: 'Server error during login' });
+    }
+};
+
+export const logout = async (req: Request, res: Response) => {
+    res.cookie('jwt', '', { maxAge: 0 });
+    res.status(200).json({ message: 'Logged out successfully' });
+};
+
+export const updateProfile = async (req: AuthRequest, res: Response) => {
+    try {
+        const { profilePic } = req.body as unknown as { profilePic: string };
+
+        if (!profilePic) {
+            return res
+                .status(400)
+                .json({ message: 'Profile picture is required' });
+        }
+        const userId = req.user?._id;
+
+        const uploadResponse = await cloudinary.uploader.upload(profilePic);
+
+        const updatedUser = await User.findByIdAndUpdate(
+            userId,
+            { profilePic: uploadResponse.secure_url },
+            { new: true }
+        );
+
+        res.status(200).json({
+            _id: updatedUser?._id,
+            fullName: updatedUser?.fullName,
+            email: updatedUser?.email,
+            profilePic: updatedUser?.profilePic,
+        });
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        res.status(500).json({
+            message: 'Server error while updating profile',
+        });
     }
 };
