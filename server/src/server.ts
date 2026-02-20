@@ -1,17 +1,15 @@
-import dotenv from 'dotenv';
 import express, { type Request, type Response } from 'express';
 import path from 'path';
 import { connectDB } from './lib/db.ts';
+import { ENV } from './lib/env.ts';
 import authRoutes from './routes/auth.route.ts';
-
-dotenv.config();
 
 const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-const PORT = process.env.PORT || 5000;
+const PORT = ENV.PORT || 5000;
 
 app.use('/api/auth', authRoutes);
 
@@ -23,7 +21,7 @@ app.use('/server', (req: Request, res: Response) => {
 // This is necessary to serve the static files in production
 const __dirname = path.resolve();
 
-if (process.env.NODE_ENV === 'production') {
+if (ENV.NODE_ENV === 'production') {
     app.use(express.static(path.join(__dirname, '../client/dist')));
     app.get('*', (req: Request, res: Response) => {
         res.sendFile(
