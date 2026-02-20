@@ -4,6 +4,7 @@ import path from 'path';
 import { connectDB } from './lib/db.ts';
 import { ENV } from './lib/env.ts';
 import authRoutes from './routes/auth.route.ts';
+import messageRoutes from './routes/message.route.ts';
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cookieParser());
 const PORT = ENV.PORT || 5000;
 
 app.use('/api/auth', authRoutes);
+app.use('/api/message', messageRoutes);
 
 // Example of a protected route using Arcjet middleware   rate limiting and bot detection
 // app.get('/test-rate-limit', arcjetProtection, (req, res) => {
