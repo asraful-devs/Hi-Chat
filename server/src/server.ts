@@ -1,3 +1,4 @@
+import cookieParser from 'cookie-parser';
 import express, { type Request, type Response } from 'express';
 import path from 'path';
 import { connectDB } from './lib/db.ts';
@@ -8,6 +9,7 @@ const app = express();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const PORT = ENV.PORT || 5000;
 
