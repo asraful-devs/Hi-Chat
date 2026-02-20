@@ -73,3 +73,46 @@ export const singup = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Server error during signup' });
     }
 };
+
+export const login = async (req: Request, res: Response) => {
+    const { email, password } = req.body;
+
+    const normalizedEmail =
+        typeof email === 'string' ? email.trim().toLowerCase() : '';
+    const pass = typeof password === 'string' ? password.trim() : '';
+
+    if (!normalizedEmail || !pass) {
+        return res
+            .status(400)
+            .json({ message: 'Email and password are required' });
+    }
+
+    try {
+        const user = await User.findOne({ email: normalizedEmail });
+        if (!user) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(pass, user.password);
+        if (!isPasswordValid) {
+            return res.status(400).json({ message: 'Invalid credentials' });
+        }
+
+        generateToken(user._id, res);
+
+        res.status(200).json({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            profilePic: user.profilePic,
+        });
+    } catch (error) {
+        console.error('Error during login:', error);
+        res.status(500).json({ message: 'Server error during login' });
+    }
+};
+
+export const logout = async (req: Request, res: Response) => {
+    res.cookie('jwt', '', { maxAge: 0 });
+    res.status(200).json({ message: 'Logged out successfully' });
+};
