@@ -15,6 +15,11 @@ const PORT = ENV.PORT || 5000;
 
 app.use('/api/auth', authRoutes);
 
+// Example of a protected route using Arcjet middleware   rate limiting and bot detection
+// app.get('/test-rate-limit', arcjetProtection, (req, res) => {
+//     res.send('This is a test endpoint for rate limiting.');
+// });
+
 app.use('/server', (req: Request, res: Response) => {
     res.send('Hello from the Hi Chat server!!!');
 });

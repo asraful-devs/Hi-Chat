@@ -5,10 +5,13 @@ import {
     singup,
     updateProfile,
 } from '../controllers/auth.controller.ts';
+import { arcjetProtection } from '../middleware/arcjet.middleware.ts';
 import { authMiddleware } from '../middleware/auth.middleware.ts';
 import type { AuthRequest } from '../types/global.inerface.ts';
 
 const router = express.Router();
+
+router.use(arcjetProtection); // Apply Arcjet protection to all routes in this router
 
 router.post('/signup', singup);
 
