@@ -1,5 +1,7 @@
 import bcrypt from 'bcryptjs';
 import type { Request, Response } from 'express';
+import { sendWelcomeEmail } from '../emails/emailHandlers.ts';
+import { ENV } from '../lib/env.ts';
 import { generateToken } from '../lib/utils.ts';
 import User from '../models/User.ts';
 
@@ -53,6 +55,16 @@ export const singup = async (req: Request, res: Response) => {
                 email: savedUser.email,
                 profilePic: savedUser.profilePic,
             });
+
+            try {
+                await sendWelcomeEmail(
+                    savedUser.email,
+                    savedUser.fullName,
+                    ENV.CLIENT_URL as string
+                );
+            } catch (error) {
+                console.error('Failed to send welcome email:', error);
+            }
         } else {
             res.status(400).json({ message: 'Invalid user data' });
         }
