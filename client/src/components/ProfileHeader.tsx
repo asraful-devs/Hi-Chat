@@ -1,5 +1,5 @@
 import { LogOutIcon, Volume2Icon, VolumeOffIcon } from 'lucide-react';
-import { useRef, useState, type FormEvent } from 'react';
+import { useRef, useState } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { useChatStore } from '../store/useChatStore';
 
@@ -10,10 +10,10 @@ function ProfileHeader() {
     const { isSoundEnabled, toggleSound } = useChatStore();
     const [selectedImg, setSelectedImg] = useState<string | null>(null);
 
-    const fileInputRef = useRef(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
-    const handleImageUpload = (e: FormEvent<HTMLFormElement>) => {
-        const file = e.target.files[0];
+    const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
         if (!file) return;
 
         const reader = new FileReader();
@@ -34,7 +34,7 @@ function ProfileHeader() {
                     <div className='avatar online'>
                         <button
                             className='size-14 rounded-full overflow-hidden relative group'
-                            onClick={() => fileInputRef.current.click()}
+                            onClick={() => fileInputRef.current?.click()}
                         >
                             <img
                                 src={

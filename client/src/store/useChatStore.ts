@@ -7,7 +7,9 @@ import { useAuthStore } from './useAuthStore';
 // Define your types
 interface User {
     _id: string;
-    // add other user properties as needed
+    fullName: string;
+    profilePic?: string;
+    email: string;
 }
 
 interface Message {
@@ -78,6 +80,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
             set({ isUsersLoading: false });
         }
     },
+
     getMyChatPartners: async () => {
         set({ isUsersLoading: true });
         try {
@@ -112,11 +115,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const { selectedUser, messages } = get();
         const { authUser } = useAuthStore.getState();
 
+        if (!authUser || !selectedUser) {
+            toast.error('User information not available');
+            return;
+        }
+
         const tempId = `temp-${Date.now()}`;
 
         const optimisticMessage = {
             _id: tempId,
-            senderId: authUser._id as string,
+            senderId: authUser.id,
             receiverId: selectedUser._id,
             text: messageData.text,
             image: messageData.image,
