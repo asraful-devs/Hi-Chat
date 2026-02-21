@@ -19,5 +19,6 @@
     "bugs": {
         "url": "https://github.com/asraful-devs/Hi-Chat/issues"
     },
-    "homepage": "https://github.com/asraful-devs/Hi-Chat#readme"
+    "homepage": "https://github.com/asraful-devs/Hi-Chat#readme",
+    "devDependencies": {}
 }
