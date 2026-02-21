@@ -1,4 +1,5 @@
 import cookieParser from 'cookie-parser';
+import cors from 'cors';
 import express, { type Request, type Response } from 'express';
 import path from 'path';
 import { connectDB } from './lib/db.ts';
@@ -11,6 +12,7 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
 
 const PORT = ENV.PORT || 5000;
 
