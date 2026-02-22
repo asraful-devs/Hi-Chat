@@ -24,7 +24,7 @@ function ChatHeader() {
     return (
         <div
             className='flex justify-between items-center bg-slate-800/50 border-b
-    border-slate-700/50 max-h-21 px-6 flex-1'
+    border-slate-700/50 px-6 py-3 shrink-0'
         >
             <div className='flex items-center space-x-3'>
                 <div className={`avatar ${isOnline ? 'online' : 'offline'}`}>
