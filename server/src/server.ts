@@ -1,15 +1,21 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
+import { createServer } from 'http';
 import path from 'path';
 import { connectDB } from './lib/db.ts';
 import { ENV } from './lib/env.ts';
+import { initializeSocket } from './lib/socket.ts';
 import authRoutes from './routes/auth.route.ts';
 import messageRoutes from './routes/message.route.ts';
 
 const app = express();
+const server = createServer(app);
 
-app.use(express.json());
+// Initialize Socket.IO
+initializeSocket(server);
+
+app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(cors({ origin: ENV.CLIENT_URL, credentials: true }));
@@ -41,7 +47,7 @@ if (ENV.NODE_ENV === 'production') {
     });
 }
 
-app.listen(PORT, () => {
+server.listen(PORT, () => {
     console.log(`Server is running on port : http://localhost:${PORT}`);
     connectDB();
 });

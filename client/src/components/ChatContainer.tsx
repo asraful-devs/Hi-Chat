@@ -16,9 +16,10 @@ function ChatContainer() {
         unsubscribeFromMessages,
     } = useChatStore();
     const { authUser } = useAuthStore();
-    const messageEndRef = useRef(null);
+    const messageEndRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        if (!selectedUser) return;
         getMessagesByUserId(selectedUser._id);
         subscribeToMessages();
 
@@ -46,11 +47,11 @@ function ChatContainer() {
                         {messages.map((msg) => (
                             <div
                                 key={msg._id}
-                                className={`chat ${msg.senderId === authUser._id ? 'chat-end' : 'chat-start'}`}
+                                className={`chat ${msg.senderId === authUser?._id ? 'chat-end' : 'chat-start'}`}
                             >
                                 <div
                                     className={`chat-bubble relative ${
-                                        msg.senderId === authUser._id
+                                        msg.senderId === authUser?._id
                                             ? 'bg-cyan-600 text-white'
                                             : 'bg-slate-800 text-slate-200'
                                     }`}
@@ -82,7 +83,9 @@ function ChatContainer() {
                 ) : isMessagesLoading ? (
                     <MessagesLoadingSkeleton />
                 ) : (
-                    <NoChatHistoryPlaceholder name={selectedUser.fullName} />
+                    <NoChatHistoryPlaceholder
+                        name={selectedUser?.fullName || ''}
+                    />
                 )}
             </div>
 
