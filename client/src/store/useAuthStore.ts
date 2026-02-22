@@ -77,6 +77,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             set({ isLoggingIn: false });
         }
     },
+
     logout: async () => {
         try {
             await axiosInstance.post('/auth/logout');
@@ -86,6 +87,7 @@ export const useAuthStore = create<AuthStore>((set) => ({
             toast.error('Error logging out');
         }
     },
+
     updateProfile: async (data: { profilePic?: string; fullName?: string }) => {
         try {
             const res = await axiosInstance.put('/auth/update-profile', data);
