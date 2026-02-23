@@ -20,6 +20,7 @@ export const getAllContacts = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 export const getChatPartners = async (req: AuthRequest, res: Response) => {
     try {
         const loggedInUserId = req.user?._id as Types.ObjectId;
@@ -49,6 +50,7 @@ export const getChatPartners = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 export const getMessagesByUserId = async (req: AuthRequest, res: Response) => {
     try {
         const myId = req.user?._id as Types.ObjectId;
@@ -67,6 +69,7 @@ export const getMessagesByUserId = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 export const sendMessage = async (req: AuthRequest, res: Response) => {
     try {
         const { text, image } = req.body;
