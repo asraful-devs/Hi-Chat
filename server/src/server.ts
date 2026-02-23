@@ -1,14 +1,19 @@
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import express, { type Request, type Response } from 'express';
+import { createServer } from 'http';
 import path from 'path';
 import { connectDB } from './lib/db.ts';
 import { ENV } from './lib/env.ts';
-import { app, server } from './lib/socket.ts';
+import { initializeSocket } from './lib/socket.ts';
 import authRoutes from './routes/auth.route.ts';
 import messageRoutes from './routes/message.route.ts';
 
-// const app = express();
+const app = express();
+const server = createServer(app);
+
+// Initialize Socket.IO
+initializeSocket(server);
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));

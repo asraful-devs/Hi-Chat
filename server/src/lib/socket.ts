@@ -1,53 +1,53 @@
-import express from 'express';
-import http from 'http';
-import { Server, Socket } from 'socket.io';
-import { socketAuthMiddleware } from '../middleware/socket.auth.middleware.ts';
-import type { IUser } from '../types/user.type.ts';
+import type { Server as HttpServer } from 'http';
+import { Server } from 'socket.io';
 import { ENV } from './env.ts';
 
-interface CustomSocket extends Socket {
-    user?: IUser;
-    userId?: string;
-}
+let io: Server;
 
-const app = express();
-const server = http.createServer(app);
+// Store online users: { oddserId: socketId }
+const userSocketMap: Record<string, string> = {};
 
-const io = new Server(server, {
-    cors: {
-        origin: [ENV.CLIENT_URL],
-        credentials: true,
-    },
-});
-
-// apply authentication middleware to all socket connections
-io.use(socketAuthMiddleware);
-
-// we will use this function to check if the user is online or not
-export function getReceiverSocketId(userId: string) {
+export const getReceiverSocketId = (userId: string): string | undefined => {
     return userSocketMap[userId];
-}
+};
 
-// this is for storig online users
-const userSocketMap: { [key: string]: string } = {}; // {userId:socketId}
-
-io.on('connection', (socket: CustomSocket) => {
-    console.log('A user connected', socket.user?.fullName);
-
-    const userId = socket.userId;
-    if (!userId) return;
-
-    userSocketMap[userId] = socket.id;
-
-    // io.emit() is used to send events to all connected clients
-    io.emit('getOnlineUsers', Object.keys(userSocketMap));
-
-    // with socket.on we listen for events from clients
-    socket.on('disconnect', () => {
-        console.log('A user disconnected', socket.user?.fullName);
-        delete userSocketMap[userId];
-        io.emit('getOnlineUsers', Object.keys(userSocketMap));
+export const initializeSocket = (server: HttpServer) => {
+    io = new Server(server, {
+        cors: {
+            origin: ENV.CLIENT_URL,
+            credentials: true,
+        },
     });
-});
 
-export { app, io, server };
+    io.on('connection', (socket) => {
+        console.log('A user connected:', socket.id);
+
+        const userId = socket.handshake.query.userId as string;
+
+        if (userId) {
+            userSocketMap[userId] = socket.id;
+        }
+
+        // Broadcast online users to all connected clients
+        io.emit('getOnlineUsers', Object.keys(userSocketMap));
+
+        socket.on('disconnect', () => {
+            console.log('A user disconnected:', socket.id);
+
+            if (userId) {
+                delete userSocketMap[userId];
+            }
+
+            io.emit('getOnlineUsers', Object.keys(userSocketMap));
+        });
+    });
+
+    return io;
+};
+
+export const getIO = (): Server => {
+    if (!io) {
+        throw new Error('Socket.io not initialized');
+    }
+    return io;
+};

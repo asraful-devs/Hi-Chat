@@ -1,6 +1,7 @@
 import type { Response } from 'express';
 import type { Types } from 'mongoose';
 import cloudinary from '../lib/cloudinary.ts';
+import { getIO, getReceiverSocketId } from '../lib/socket.ts';
 import Message from '../models/Message.ts';
 import User from '../models/User.ts';
 import type { AuthRequest } from '../types/global.inerface.ts';
@@ -19,6 +20,7 @@ export const getAllContacts = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ message: 'Server error' });
     }
 };
+
 export const getChatPartners = async (req: AuthRequest, res: Response) => {
     try {
         const loggedInUserId = req.user?._id as Types.ObjectId;
@@ -48,6 +50,7 @@ export const getChatPartners = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 export const getMessagesByUserId = async (req: AuthRequest, res: Response) => {
     try {
         const myId = req.user?._id as Types.ObjectId;
@@ -66,6 +69,7 @@ export const getMessagesByUserId = async (req: AuthRequest, res: Response) => {
         res.status(500).json({ error: 'Internal server error' });
     }
 };
+
 export const sendMessage = async (req: AuthRequest, res: Response) => {
     try {
         const { text, image } = req.body;
@@ -103,7 +107,11 @@ export const sendMessage = async (req: AuthRequest, res: Response) => {
 
         await newMessage.save();
 
-        // todo: emit this message to the receiver in real-time using Socket.IO
+        // Emit message to receiver in real-time
+        const receiverSocketId = getReceiverSocketId(receiverId);
+        if (receiverSocketId) {
+            getIO().to(receiverSocketId).emit('newMessage', newMessage);
+        }
 
         res.status(201).json(newMessage);
     } catch (error) {

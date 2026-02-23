@@ -1,5 +1,6 @@
 import type { AxiosError } from 'axios';
 import toast from 'react-hot-toast';
+import type { Socket } from 'socket.io-client';
 import { create } from 'zustand';
 import { axiosInstance } from '../lib/axios';
 import { useAuthStore } from './useAuthStore';
@@ -69,7 +70,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     getAllContacts: async () => {
         set({ isUsersLoading: true });
         try {
-            const res = await axiosInstance.get('/messages/contacts');
+            const res = await axiosInstance.get('/message/contacts');
             set({ allContacts: res.data });
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
@@ -84,7 +85,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     getMyChatPartners: async () => {
         set({ isUsersLoading: true });
         try {
-            const res = await axiosInstance.get('/messages/chats');
+            const res = await axiosInstance.get('/message/chats');
             set({ chats: res.data });
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
@@ -99,7 +100,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     getMessagesByUserId: async (userId) => {
         set({ isMessagesLoading: true });
         try {
-            const res = await axiosInstance.get(`/messages/${userId}`);
+            const res = await axiosInstance.get(`/message/${userId}`);
             set({ messages: res.data });
         } catch (error) {
             const axiosError = error as AxiosError<{ message: string }>;
@@ -124,7 +125,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         const optimisticMessage = {
             _id: tempId,
-            senderId: authUser.id,
+            senderId: authUser._id,
             receiverId: selectedUser._id,
             text: messageData.text,
             image: messageData.image,
@@ -136,7 +137,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
         try {
             const res = await axiosInstance.post(
-                `/messages/send/${selectedUser._id}`,
+                `/message/send/${selectedUser._id}`,
                 messageData
             );
             set({ messages: messages.concat(res.data) });
@@ -154,7 +155,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         const { selectedUser, isSoundEnabled } = get();
         if (!selectedUser) return;
 
-        const socket = useAuthStore.getState().socket;
+        const socket = useAuthStore.getState().Socket as Socket;
 
         socket.on('newMessage', (newMessage) => {
             const isMessageSentFromSelectedUser =
@@ -176,7 +177,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
     },
 
     unsubscribeFromMessages: () => {
-        const socket = useAuthStore.getState().socket;
+        const socket = useAuthStore.getState().Socket as Socket;
         socket.off('newMessage');
     },
 }));

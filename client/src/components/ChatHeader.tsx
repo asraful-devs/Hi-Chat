@@ -6,10 +6,12 @@ import { useChatStore } from '../store/useChatStore';
 function ChatHeader() {
     const { selectedUser, setSelectedUser } = useChatStore();
     const { onlineUsers } = useAuthStore();
-    const isOnline = onlineUsers.includes(selectedUser._id);
+    const isOnline = selectedUser
+        ? onlineUsers.includes(selectedUser._id)
+        : false;
 
     useEffect(() => {
-        const handleEscKey = (event) => {
+        const handleEscKey = (event: KeyboardEvent) => {
             if (event.key === 'Escape') setSelectedUser(null);
         };
 
@@ -22,21 +24,21 @@ function ChatHeader() {
     return (
         <div
             className='flex justify-between items-center bg-slate-800/50 border-b
-    border-slate-700/50 max-h-21 px-6 flex-1'
+    border-slate-700/50 px-6 py-3 shrink-0'
         >
             <div className='flex items-center space-x-3'>
                 <div className={`avatar ${isOnline ? 'online' : 'offline'}`}>
                     <div className='w-12 rounded-full'>
                         <img
-                            src={selectedUser.profilePic || '/avatar.png'}
-                            alt={selectedUser.fullName}
+                            src={selectedUser?.profilePic || '/avatar.png'}
+                            alt={selectedUser?.fullName || 'User'}
                         />
                     </div>
                 </div>
 
                 <div>
                     <h3 className='text-slate-200 font-medium'>
-                        {selectedUser.fullName}
+                        {selectedUser?.fullName}
                     </h3>
                     <p className='text-slate-400 text-sm'>
                         {isOnline ? 'Online' : 'Offline'}
