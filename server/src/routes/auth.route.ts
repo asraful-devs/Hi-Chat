@@ -25,8 +25,4 @@ router.get('/check-auth', authMiddleware, (req: AuthRequest, res: Response) => {
     res.status(200).json({ user: req.user, message: 'Authenticated' });
 });
 
-router.get('/api/auth', (req, res) => {
-    res.send('Hello from the server!');
-});
-
 export default router;
