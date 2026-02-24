@@ -11,10 +11,14 @@ function ChatPage() {
     const { activeTab, selectedUser } = useChatStore();
 
     return (
-        <div className='relative w-full max-w-6xl h-[calc(100vh-2rem)] max-h-175 mx-auto'>
+        <div className='relative w-full max-w-6xl h-[calc(100vh-2rem)] md:max-h-175 mx-auto'>
             <BorderAnimatedContainer>
-                {/* LEFT SIDE */}
-                <div className='w-80 bg-slate-800/50 backdrop-blur-sm flex flex-col min-h-0'>
+                {/* LEFT SIDE - Hidden on mobile when user is selected */}
+                <div
+                    className={`md:w-80 w-full bg-slate-800/50 backdrop-blur-sm flex flex-col min-h-0 ${
+                        selectedUser ? 'hidden md:flex' : 'flex'
+                    }`}
+                >
                     <ProfileHeader />
                     <ActiveTabSwitch />
 
@@ -27,8 +31,12 @@ function ChatPage() {
                     </div>
                 </div>
 
-                {/* RIGHT SIDE */}
-                <div className='flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm overflow-hidden min-h-0'>
+                {/* RIGHT SIDE - Hidden on mobile when no user is selected */}
+                <div
+                    className={`flex-1 flex flex-col bg-slate-900/50 backdrop-blur-sm overflow-hidden min-h-0 ${
+                        selectedUser ? 'flex' : 'hidden md:flex'
+                    }`}
+                >
                     {selectedUser ? (
                         <ChatContainer />
                     ) : (
