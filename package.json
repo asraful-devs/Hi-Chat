@@ -1,11 +1,10 @@
 {
     "name": "hi-chat",
     "version": "1.0.0",
-    "description": "",
+    "description": "Real-time chat application with Socket.io",
     "main": "index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
-        "build": "npm install --prefix server && npm install --prefix client && npm run build --prefix client",
+        "build": "npm install --prefix client && npm run build --prefix client && npm install --prefix server && npm run build --prefix server",
         "start": "npm run start --prefix server"
     },
     "repository": {
@@ -16,6 +15,9 @@
     "author": "",
     "license": "ISC",
     "type": "module",
+    "engines": {
+        "node": ">=18.0.0"
+    },
     "bugs": {
         "url": "https://github.com/asraful-devs/Hi-Chat/issues"
     },
