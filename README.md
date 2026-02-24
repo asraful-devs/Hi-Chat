@@ -150,12 +150,6 @@ Hi-Chat implements multiple layers of security:
 
 ---
 
-## 📄 License
-
-This project is open source and available under the [ISC License](LICENSE).
-
----
-
 <div align="center">
 
 **Built with ❤️ for seamless communication**
