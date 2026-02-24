@@ -39,18 +39,18 @@ function ChatContainer() {
     }, [messages]);
 
     return (
-        <div className='flex flex-col h-full overflow-hidden'>
+        <div className='flex flex-col h-full min-h-0'>
             <ChatHeader />
-            <div className='flex-1 px-6 overflow-y-auto py-8 min-h-0'>
+            <div className='flex-1 px-3 md:px-6 overflow-y-auto py-4 min-h-0'>
                 {messages.length > 0 && !isMessagesLoading ? (
-                    <div className='max-w-3xl mx-auto space-y-6'>
+                    <div className='max-w-3xl mx-auto space-y-4 md:space-y-6'>
                         {messages.map((msg) => (
                             <div
                                 key={msg._id}
                                 className={`chat ${msg.senderId === authUser?._id ? 'chat-end' : 'chat-start'}`}
                             >
                                 <div
-                                    className={`chat-bubble relative ${
+                                    className={`chat-bubble relative max-w-[85%] md:max-w-[70%] ${
                                         msg.senderId === authUser?._id
                                             ? 'bg-cyan-600 text-white'
                                             : 'bg-slate-800 text-slate-200'
@@ -60,11 +60,13 @@ function ChatContainer() {
                                         <img
                                             src={msg.image}
                                             alt='Shared'
-                                            className='rounded-lg h-48 object-cover'
+                                            className='rounded-lg h-32 md:h-48 object-cover'
                                         />
                                     )}
                                     {msg.text && (
-                                        <p className='mt-2'>{msg.text}</p>
+                                        <p className='mt-2 text-sm md:text-base wrap-break-word'>
+                                            {msg.text}
+                                        </p>
                                     )}
                                     <p className='text-xs mt-1 opacity-75 flex items-center gap-1'>
                                         {new Date(
